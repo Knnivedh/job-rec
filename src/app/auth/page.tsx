@@ -268,6 +268,21 @@ export default function AuthPage() {
             </div>
           </div>
         </div>
+        
+        {/* Developer Credit */}
+        <div className="mt-6 text-center">
+          <p className="text-xs text-gray-500">
+            Developed by{' '}
+            <a
+              href="https://knnivedh.netlify.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-500 font-medium"
+            >
+              K N Nivedh
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   )

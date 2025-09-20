@@ -286,9 +286,22 @@ export default function LandingPage() {
             <p className="text-gray-400 mb-4">
               Empowering careers with AI-driven job matching technology
             </p>
-            <p className="text-sm text-gray-500">
-              © 2024 AI Resume Matcher. Built with Next.js, Supabase, and Groq AI.
-            </p>
+            <div className="flex flex-col items-center space-y-2">
+              <p className="text-sm text-gray-500">
+                © 2024 AI Resume Matcher. Built with Next.js, Supabase, and Groq AI.
+              </p>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-400">Developed by</span>
+                <a
+                  href="https://knnivedh.netlify.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors font-medium"
+                >
+                  K N Nivedh
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
