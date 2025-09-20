@@ -18,18 +18,36 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get user's app_user record
-    const { data: appUser } = await supabaseAdmin
+    // Get or create user's app_user record
+    let { data: appUser } = await supabaseAdmin
       .from('app_users')
       .select('id')
       .eq('auth_user_id', user.id)
       .single()
 
+    // If user profile doesn't exist, create it
     if (!appUser) {
-      return NextResponse.json(
-        { error: 'User profile not found' },
-        { status: 404 }
-      )
+      const { data: newAppUser, error: createError } = await supabaseAdmin
+        .from('app_users')
+        .insert({
+          auth_user_id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select('id')
+        .single()
+
+      if (createError) {
+        console.error('Error creating user profile:', createError)
+        return NextResponse.json(
+          { error: 'Failed to create user profile' },
+          { status: 500 }
+        )
+      }
+
+      appUser = newAppUser
     }
 
     const formData = await request.formData()
