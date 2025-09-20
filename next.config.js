@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Optimized for Vercel deployment
+  // Optimized for Render deployment
+  output: 'standalone',
   images: {
     domains: ['localhost'],
     unoptimized: true // For static export compatibility
