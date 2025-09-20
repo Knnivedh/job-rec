@@ -32,17 +32,20 @@ export async function POST(request: NextRequest) {
         .insert({
           auth_user_id: user.id,
           email: user.email,
-          full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
         })
         .select('id')
         .single()
 
       if (createError) {
         console.error('Error creating user profile:', createError)
+        console.error('User data:', {
+          auth_user_id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
+        })
         return NextResponse.json(
-          { error: 'Failed to create user profile' },
+          { error: `Failed to create user profile: ${createError.message}` },
           { status: 500 }
         )
       }
