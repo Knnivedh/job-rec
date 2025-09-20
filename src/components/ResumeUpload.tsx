@@ -148,9 +148,26 @@ export default function ResumeUpload() {
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="flex items-center">
             <AlertCircle className="h-5 w-5 text-red-400 mr-3" />
-            <div>
+            <div className="flex-1">
               <h3 className="text-sm font-medium text-red-800">Upload Error</h3>
               <p className="text-sm text-red-700 mt-1">{error}</p>
+              {error.includes('table') || error.includes('database') || error.includes('profile') ? (
+                <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                  <p className="text-sm text-yellow-800 font-medium">🔧 Database Setup Required</p>
+                  <p className="text-xs text-yellow-700 mt-1">
+                    The database schema needs to be applied to your Supabase project.
+                  </p>
+                  <div className="mt-2">
+                    <a 
+                      href="/DATABASE_SETUP_REQUIRED.md"
+                      target="_blank"
+                      className="text-xs text-blue-600 hover:text-blue-800 underline"
+                    >
+                      📋 View Setup Instructions
+                    </a>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

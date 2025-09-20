@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { User, FileText, Briefcase, TrendingUp, Settings, LogOut } from 'lucide-react'
 import ResumeUpload from '@/components/ResumeUpload'
 import JobRecommendations from '@/components/JobRecommendations'
+import SystemStatus from '@/components/SystemStatus'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
 
@@ -117,6 +118,9 @@ export default function Dashboard() {
           <div className="lg:w-64 space-y-6">
             {/* Stats Cards */}
             <div className="space-y-4">
+              {/* System Status */}
+              <SystemStatus />
+              
               <div className="bg-white p-4 rounded-lg shadow-sm border">
                 <div className="flex items-center">
                   <FileText className="h-8 w-8 text-blue-600" />
