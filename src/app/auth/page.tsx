@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { supabase } from '@/lib/supabase'
 import { Briefcase, Mail, Lock, User, ArrowLeft, AlertCircle, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 
@@ -15,7 +15,6 @@ export default function AuthPage() {
   const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null)
   
   const router = useRouter()
-  const supabase = createClientComponentClient()
 
   useEffect(() => {
     const checkUser = async () => {
@@ -25,7 +24,7 @@ export default function AuthPage() {
       }
     }
     checkUser()
-  }, [router, supabase.auth])
+  }, [router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { supabase } from '@/lib/supabase'
 import { 
   Briefcase, 
   Upload, 
@@ -19,7 +19,6 @@ import {
 export default function LandingPage() {
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
-  const supabase = createClientComponentClient()
 
   useEffect(() => {
     const checkUser = async () => {
@@ -31,7 +30,7 @@ export default function LandingPage() {
       }
     }
     checkUser()
-  }, [router, supabase.auth])
+  }, [router])
 
   const handleGetStarted = () => {
     router.push('/auth')
