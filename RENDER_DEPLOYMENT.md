@@ -21,7 +21,7 @@ Your AI Resume Recommendation System is ready for Render deployment!
 - **Environment**: `Node`
 - **Region**: `Oregon` (or closest to you)
 - **Branch**: `main`
-- **Build Command**: `npm install && npm run build`
+- **Build Command**: `npm install --include=dev && npm run build`
 - **Start Command**: `npm start`
 
 #### **Step 4: Add Environment Variables**
