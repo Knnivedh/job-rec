@@ -242,7 +242,7 @@ async function generateRecommendationsForUser(userId: string, resume: any, supab
     }))
 
     // Filter out low-scoring recommendations
-    const goodRecommendations = recommendations.filter(rec => rec.match_score >= 0.3)
+    const goodRecommendations = recommendations.filter((rec: any) => rec.match_score >= 0.3)
 
     if (goodRecommendations.length > 0) {
       await supabaseAdmin
@@ -256,11 +256,11 @@ async function generateRecommendationsForUser(userId: string, resume: any, supab
 }
 
 function getMatchingSkills(userSkills: string[], jobSkills: string[]): string[] {
-  const userSkillsLower = userSkills.map(skill => skill.toLowerCase())
-  const jobSkillsLower = jobSkills.map(skill => skill.toLowerCase())
+  const userSkillsLower = userSkills.map((skill: string) => skill.toLowerCase())
+  const jobSkillsLower = jobSkills.map((skill: string) => skill.toLowerCase())
   
-  return userSkills.filter(skill => 
-    jobSkillsLower.some(jobSkill => 
+  return userSkills.filter((skill: string) => 
+    jobSkillsLower.some((jobSkill: string) => 
       jobSkill.includes(skill.toLowerCase()) || 
       skill.toLowerCase().includes(jobSkill)
     )

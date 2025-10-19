@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
 async function saveUserSkills(userId: string, skills: string[], resumeId: string, supabaseAdmin: any) {
   try {
     // First, get or create skill records
-    const skillPromises = skills.map(async (skillName) => {
+    const skillPromises = skills.map(async (skillName: string) => {
       const { data: existingSkill } = await supabaseAdmin
         .from('skills')
         .select('id')
@@ -216,10 +216,10 @@ async function saveUserSkills(userId: string, skills: string[], resumeId: string
     })
 
     const skillIds = await Promise.all(skillPromises)
-    const validSkillIds = skillIds.filter(id => id)
+    const validSkillIds = skillIds.filter((id: any) => id)
 
     // Save user skills
-    const userSkillsData = validSkillIds.map(skillId => ({
+    const userSkillsData = validSkillIds.map((skillId: any) => ({
       user_id: userId,
       skill_id: skillId,
       proficiency_level: 'intermediate', // Default level, can be improved later
