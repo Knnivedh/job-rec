@@ -242,7 +242,24 @@ async function saveUserSkills(userId: string, skills: string[], resumeId: string
 }
 
 export async function GET(request: NextRequest) {
+  // Check if we're in SIMPLE mode (no database)
+  const isSimpleMode = !!process.env.NVIDIA_API_KEY && !process.env.NEXT_PUBLIC_SUPABASE_URL
+  
+  if (isSimpleMode) {
+    return NextResponse.json(
+      { 
+        error: 'This feature requires database authentication',
+        message: 'Resume storage is not available in simple mode. Use /api/simple-analyze instead.'
+      },
+      { status: 503 }
+    )
+  }
+
   try {
+    // Dynamic imports for FULL mode only
+    const { cookies } = await import('next/headers')
+    const { createRouteHandlerClient } = await import('@supabase/auth-helpers-nextjs')
+    
     // Get authenticated user
     const supabase = createRouteHandlerClient({ cookies })
     const { data: { user }, error: authError } = await supabase.auth.getUser()
