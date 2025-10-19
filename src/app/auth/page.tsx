@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
 import { Briefcase, Mail, Lock, User, ArrowLeft, AlertCircle, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 
@@ -13,21 +12,44 @@ export default function AuthPage() {
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null)
+  const [supabase, setSupabase] = useState<any>(null)
   
   const router = useRouter()
 
   useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        router.push('/dashboard')
+    // Check if we're in SIMPLE mode
+    const isSimpleMode = !process.env.NEXT_PUBLIC_SUPABASE_URL
+    
+    if (isSimpleMode) {
+      router.push('/simple')
+      return
+    }
+
+    // In FULL mode, load supabase and check user
+    const initAuth = async () => {
+      try {
+        const { supabase: supabaseClient } = await import('@/lib/supabase')
+        setSupabase(supabaseClient)
+        
+        const { data: { user } } = await supabaseClient.auth.getUser()
+        if (user) {
+          router.push('/dashboard')
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error)
       }
     }
-    checkUser()
+    initAuth()
   }, [router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!supabase) {
+      setMessage({ type: 'error', text: 'Authentication not available' })
+      return
+    }
+    
     setLoading(true)
     setMessage(null)
 

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
 import { LogIn, LogOut, User, Mail, Lock } from 'lucide-react'
 
 interface AuthUser {
@@ -17,27 +16,53 @@ export default function AuthComponent() {
   const [password, setPassword] = useState('')
   const [authLoading, setAuthLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const [supabase, setSupabase] = useState<any>(null)
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
+    // Check if we're in SIMPLE mode
+    const isSimpleMode = !process.env.NEXT_PUBLIC_SUPABASE_URL
+    
+    if (isSimpleMode) {
       setLoading(false)
-    })
+      return
+    }
 
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
+    // In FULL mode, load supabase
+    const initAuth = async () => {
+      try {
+        const { supabase: supabaseClient } = await import('@/lib/supabase')
+        setSupabase(supabaseClient)
+        
+        // Get initial session
+        const { data: { session } } = await supabaseClient.auth.getSession()
+        setUser(session?.user ?? null)
+        setLoading(false)
 
-    return () => subscription.unsubscribe()
+        // Listen for auth changes
+        const {
+          data: { subscription },
+        } = supabaseClient.auth.onAuthStateChange((_event, session) => {
+          setUser(session?.user ?? null)
+        })
+
+        return () => subscription.unsubscribe()
+      } catch (error) {
+        console.error('Auth initialization error:', error)
+        setLoading(false)
+      }
+    }
+    
+    initAuth()
   }, [])
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (!supabase) {
+      setMessage('Authentication not available in simple mode')
+      return
+    }
+    
     setAuthLoading(true)
     setMessage('')
 
@@ -64,6 +89,7 @@ export default function AuthComponent() {
   }
 
   const handleSignOut = async () => {
+    if (!supabase) return
     await supabase.auth.signOut()
   }
 
