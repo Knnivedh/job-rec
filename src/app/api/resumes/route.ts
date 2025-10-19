@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
 
     // Extract and save user skills
     if (parsedData.skills && parsedData.skills.length > 0) {
-      await saveUserSkills(appUser.id, parsedData.skills, resumeData.id)
+      await saveUserSkills(appUser.id, parsedData.skills, resumeData.id, supabaseAdmin)
     }
 
     return NextResponse.json({
@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function saveUserSkills(userId: string, skills: string[], resumeId: string) {
+async function saveUserSkills(userId: string, skills: string[], resumeId: string, supabaseAdmin: any) {
   try {
     // First, get or create skill records
     const skillPromises = skills.map(async (skillName) => {
