@@ -95,3 +95,6 @@ Thumbs.db
 
 # SWC
 .swc/
+
+# Local Netlify folder
+.netlify
