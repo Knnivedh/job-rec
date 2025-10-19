@@ -1,12 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
-import { parseResume } from '@/lib/resume-parser'
-import { generateEmbedding } from '@/lib/groq'
-import { cookies } from 'next/headers'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 
 export async function POST(request: NextRequest) {
+  // Check if we're in SIMPLE mode (no database)
+  const isSimpleMode = !!process.env.NVIDIA_API_KEY && !process.env.NEXT_PUBLIC_SUPABASE_URL
+  
+  if (isSimpleMode) {
+    return NextResponse.json(
+      { 
+        error: 'This feature requires database authentication',
+        message: 'Resumes API is not available in simple mode. Use /api/simple-analyze instead.'
+      },
+      { status: 503 }
+    )
+  }
+
   try {
+    // Dynamic imports for FULL mode only
+    const { supabaseAdmin } = await import('@/lib/supabase')
+    const { parseResume } = await import('@/lib/resume-parser')
+    const { generateEmbedding } = await import('@/lib/groq')
+    const { cookies } = await import('next/headers')
+    const { createRouteHandlerClient } = await import('@supabase/auth-helpers-nextjs')
+    
     // Get authenticated user
     const supabase = createRouteHandlerClient({ cookies })
     const { data: { user }, error: authError } = await supabase.auth.getUser()
