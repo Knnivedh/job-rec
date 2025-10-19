@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
 import { 
   Briefcase, 
   Upload, 
@@ -21,15 +20,29 @@ export default function LandingPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        router.push('/dashboard')
-      } else {
-        setIsLoading(false)
+    // In SIMPLE mode, redirect to /simple immediately
+    const isSimpleMode = !process.env.NEXT_PUBLIC_SUPABASE_URL
+    
+    if (isSimpleMode) {
+      router.push('/simple')
+    } else {
+      // In FULL mode, check for authenticated user
+      const checkUser = async () => {
+        try {
+          const { supabase } = await import('@/lib/supabase')
+          const { data: { user } } = await supabase.auth.getUser()
+          if (user) {
+            router.push('/dashboard')
+          } else {
+            setIsLoading(false)
+          }
+        } catch (error) {
+          console.error('Auth check error:', error)
+          setIsLoading(false)
+        }
       }
+      checkUser()
     }
-    checkUser()
   }, [router])
 
   const handleGetStarted = () => {
