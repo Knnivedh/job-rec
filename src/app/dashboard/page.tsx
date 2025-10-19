@@ -92,7 +92,9 @@ export default function Dashboard() {
     // Refresh recommendations when a new resume is uploaded
     setRefreshKey(prev => prev + 1)
     setActiveTab('recommendations')
-    fetchUserProfile()
+    if (supabase) {
+      fetchUserProfile(supabase)
+    }
   }
 
   if (loading) {
