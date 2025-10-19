@@ -5,7 +5,6 @@ import { User, FileText, Briefcase, TrendingUp, Settings, LogOut } from 'lucide-
 import ResumeUpload from '@/components/ResumeUpload'
 import JobRecommendations from '@/components/JobRecommendations'
 import SystemStatus from '@/components/SystemStatus'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
 
 interface UserProfile {
@@ -20,30 +19,53 @@ export default function Dashboard() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [supabase, setSupabase] = useState<any>(null)
   
-  const supabase = createClientComponentClient()
   const router = useRouter()
 
   useEffect(() => {
-    fetchUserProfile()
+    // Check if we're in SIMPLE mode
+    const isSimpleMode = !process.env.NEXT_PUBLIC_SUPABASE_URL
+    
+    if (isSimpleMode) {
+      router.push('/simple')
+      return
+    }
+
+    // In FULL mode, initialize supabase
+    const initDashboard = async () => {
+      try {
+        const { createClientComponentClient } = await import('@supabase/auth-helpers-nextjs')
+        const supabaseClient = createClientComponentClient()
+        setSupabase(supabaseClient)
+        fetchUserProfile(supabaseClient)
+      } catch (error) {
+        console.error('Dashboard initialization error:', error)
+        router.push('/simple')
+      }
+    }
+    
+    initDashboard()
   }, [])
 
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = async (supabaseClient: any) => {
+    if (!supabaseClient) return
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user } } = await supabaseClient.auth.getUser()
       if (!user) {
         router.push('/auth')
         return
       }
 
       // Get user resumes count
-      const { data: resumes, count: resumeCount } = await supabase
+      const { data: resumes, count: resumeCount } = await supabaseClient
         .from('resumes')
         .select('id', { count: 'exact' })
         .eq('is_active', true)
 
       // Get recommendations count
-      const { data: recommendations, count: recommendationsCount } = await supabase
+      const { data: recommendations, count: recommendationsCount } = await supabaseClient
         .from('job_recommendations')
         .select('id', { count: 'exact' })
 
@@ -61,6 +83,7 @@ export default function Dashboard() {
   }
 
   const handleSignOut = async () => {
+    if (!supabase) return
     await supabase.auth.signOut()
     router.push('/')
   }
