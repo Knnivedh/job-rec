@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Generate new recommendations
-    await generateRecommendationsForUser(appUser.id, resume)
+    await generateRecommendationsForUser(appUser.id, resume, supabaseAdmin, generateJobRecommendations)
 
     // Fetch the newly generated recommendations
     const { data: newRecommendations } = await supabaseAdmin
@@ -178,7 +178,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-async function generateRecommendationsForUser(userId: string, resume: any) {
+async function generateRecommendationsForUser(userId: string, resume: any, supabaseAdmin: any, generateJobRecommendations: any) {
   try {
     // Get available jobs
     const { data: jobs } = await supabaseAdmin
