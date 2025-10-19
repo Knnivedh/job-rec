@@ -225,7 +225,7 @@ async function generateRecommendationsForUser(userId: string, resume: any, supab
     )
 
     // Save recommendations
-    const recommendations = candidateJobs.map((job, index) => ({
+    const recommendations = candidateJobs.map((job: any, index: number) => ({
       user_id: userId,
       resume_id: resume.id,
       job_id: job.id,
